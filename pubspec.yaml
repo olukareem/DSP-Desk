@@ -1,0 +1,81 @@
+name: drivers_management_app
+description: A drivers management application for managing a fleet of vehicles, drivers, and trip-related activities with real-time statistics.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Icons for iOS
+  cupertino_icons: ^1.0.2
+
+  # State Management
+  provider: ^6.0.5
+
+  # Navigation
+  go_router: ^14.6.1
+
+  # For HTTP Requests (using the latest version)
+  http: ^1.0.0
+
+  # For Charts in KPI Metrics and Dashboard
+  fl_chart: ^0.69.2
+
+  # Data Persistence - local storage for caching data
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.11
+
+  # Real-time data (Firebase for chat, driver updates, etc.)
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.3
+  cloud_firestore: ^5.0.2
+  firebase_messaging: ^15.1.5
+
+  # User Authentication UI (alternative)
+  firebase_ui_auth: ^1.0.0 # Updated from flutterfire_ui to a stable firebase_ui_auth version
+
+  # Analytics
+  firebase_analytics: ^11.3.5
+
+  # Forms
+  flutter_form_builder: ^9.5.0
+
+  # Google Maps for tracking
+  google_maps_flutter: ^2.3.0 # Changed to a more stable version
+
+  # UI Components
+  flutter_slidable: ^3.1.1
+  animations: ^2.0.7
+
+  # For Handling Date & Time
+  intl: ^0.19.0
+
+  # State and Persistent Navigation Drawer
+  flutter_riverpod: ^2.3.0
+  font_awesome_flutter: ^10.8.0
+  flutter_svg: ^2.0.15
+  shared_preferences: ^2.3.3 
+  flutter_quill: ^10.8.5
+  uuid: ^3.0.6
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
