@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_text_field.dart';
 import '../../theme/app_theme.dart';
@@ -7,14 +9,13 @@ import '../../theme/buttons.dart';
 import '../../services/auth_service.dart';
 import '../dashboard/kpis_screen.dart';
 import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 import 'forgot_password_screens.dart';
 
 // Email Verification Screen
 class EmailVerificationScreen extends StatelessWidget {
-  const EmailVerificationScreen({Key? key}) : super(key: key);
+  const EmailVerificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +112,7 @@ class EmailVerificationScreen extends StatelessWidget {
 class AuthScreen extends StatefulWidget {
   final bool isLogin;
 
-  const AuthScreen({Key? key, this.isLogin = true}) : super(key: key);
+  const AuthScreen({super.key, this.isLogin = true});
 
   @override
   _AuthScreenState createState() => _AuthScreenState();
@@ -129,6 +130,7 @@ class _AuthScreenState extends State<AuthScreen> {
   UserRole _selectedRole = UserRole.driver;
   bool _isLoading = false;
   bool _rememberMe = false;
+  bool _isTermsAgreed = false;
 
   final AuthService _authService = AuthService();
 
@@ -161,7 +163,6 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  // Add this method to save login state
   Future<void> _saveLoginState(UserCredential userCredential) async {
     if (_rememberMe) {
       final prefs = await SharedPreferences.getInstance();
@@ -201,35 +202,50 @@ class _AuthScreenState extends State<AuthScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 32),
                 Center(
                   child: Image.asset(
                     'assets/images/logo.png',
                     width: 120.19,
                     height: 40,
+                    color: AppTheme.primaryBlue,
                   ),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  widget.isLogin ? 'Login' : 'Sign Up',
-                  style: TextStyle(
-                    fontFamily: 'Spectral',
-                    fontSize: 32,
-                    color: AppColors.secondary,
+                const SizedBox(height: 64),
+                Center(
+                  child: Text(
+                    widget.isLogin ? 'Login' : 'Sign Up',
+                    style: GoogleFonts.spectral(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      height: 1.54,
+                      color: AppColors.secondary,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  widget.isLogin
-                      ? 'Welcome back! Please enter your details'
-                      : 'Create an account to get started',
-                  style: AppTheme.lightTheme.textTheme.bodyLarge,
+                Center(
+                  child: Text(
+                    widget.isLogin
+                        ? 'Welcome back! Please enter your details'
+                        : 'Create an account to get started',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      height: 1.54,
+                      color: AppColors.secondary,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 _buildRoleSelector(),
+                const SizedBox(height: 24),
                 if (!widget.isLogin) ...[
+                  // For Full Name field
                   _buildTextField(
                     controller: _fullNameController,
                     label: 'Full Name',
+                    customHintText: 'Enter name',
                     isRequired: true,
                     validator: (value) => value?.isEmpty ?? true
                         ? 'Please enter your name'
@@ -240,7 +256,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 _buildTextField(
                   controller: _emailController,
                   label: 'Email',
-                  isRequired: !widget.isLogin,
+                  isRequired: true,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
@@ -256,10 +272,12 @@ class _AuthScreenState extends State<AuthScreen> {
                 if (widget.isLogin)
                   _buildPasswordSection()
                 else
+                  // For Password field
                   _buildTextField(
                     controller: _passwordController,
                     label: 'Password',
-                    isRequired: !widget.isLogin,
+                    customHintText: 'Enter password',
+                    isRequired: true,
                     obscureText: true,
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
@@ -275,14 +293,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   _buildTextField(
                     controller: _confirmPasswordController,
                     label: 'Confirm Password',
+                    customHintText: 'Repeat password',
                     obscureText: true,
                     validator: (value) => value != _passwordController.text
                         ? 'Passwords do not match'
                         : null,
                   ),
+                if (!widget.isLogin) ...[
+                  const SizedBox(height: 16),
+                  _buildTermsAndConditionsCheckbox(),
+                ],
                 const SizedBox(height: 24),
                 _buildSubmitButton(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 _buildToggleAuthModeButton(),
               ],
             ),
@@ -293,29 +316,48 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _buildRoleSelector() {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.lightGrey,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildRoleButton(
-              title: 'Driver',
-              isSelected: _selectedRole == UserRole.driver,
-              onTap: () => setState(() => _selectedRole = UserRole.driver),
-            ),
+    return Center(
+      child: Container(
+        width: 290,
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(249, 249, 249, 1),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(8),
           ),
-          Expanded(
-            child: _buildRoleButton(
-              title: 'Manager',
-              isSelected: _selectedRole == UserRole.manager,
-              onTap: () => setState(() => _selectedRole = UserRole.manager),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 111,
+              child: AppButton(
+                text: 'Driver',
+                size: ButtonSize.medium,
+                variant: _selectedRole == UserRole.driver
+                    ? ButtonVariant.roleActive
+                    : ButtonVariant.roleInactive,
+                onPressed: () =>
+                    setState(() => _selectedRole = UserRole.driver),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 111,
+              child: AppButton(
+                text: 'Manager',
+                size: ButtonSize.medium,
+                variant: _selectedRole == UserRole.manager
+                    ? ButtonVariant.roleActive
+                    : ButtonVariant.roleInactive,
+                onPressed: () =>
+                    setState(() => _selectedRole = UserRole.manager),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -413,6 +455,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
+    String? customHintText,
     bool obscureText = false,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
@@ -422,11 +465,13 @@ class _AuthScreenState extends State<AuthScreen> {
       padding: const EdgeInsets.only(bottom: 16),
       child: AppTextField(
         label: label,
-        hintText: 'Enter ${label.toLowerCase()}',
+        hintText: customHintText ?? 'Enter ${label.toLowerCase()}',
         isRequired: isRequired ?? false,
         keyboardType: keyboardType ?? TextInputType.text,
         controller: controller,
         validator: validator,
+        obscureText: obscureText,
+        showPasswordToggle: obscureText,
       ),
     );
   }
@@ -438,7 +483,7 @@ class _AuthScreenState extends State<AuthScreen> {
         _buildTextField(
           controller: _passwordController,
           label: 'Password',
-          isRequired: !widget.isLogin,
+          isRequired: true,
           obscureText: true,
           validator: (value) {
             if (value?.isEmpty ?? true) {
@@ -457,26 +502,47 @@ class _AuthScreenState extends State<AuthScreen> {
               Row(
                 children: [
                   SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Checkbox(
-                      value: _rememberMe,
-                      onChanged: (value) {
+                    height: 20, // Adjusted height
+                    width: 20, // Adjusted width
+                    child: GestureDetector(
+                      onTap: () {
                         setState(() {
-                          _rememberMe = value ?? false;
+                          _rememberMe = !_rememberMe;
                         });
                       },
-                      activeColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          color: _rememberMe
+                              ? const Color.fromRGBO(
+                                  52, 84, 207, 1) // Fill color when checked
+                              : Colors
+                                  .transparent, // Transparent when unchecked
+                          border: Border.all(
+                            color: const Color.fromRGBO(
+                                193, 199, 201, 1), // Border color
+                            width: 1,
+                          ),
+                        ),
+                        child: _rememberMe
+                            ? Icon(
+                                Icons.check,
+                                size: 14,
+                                color: Colors.white,
+                              )
+                            : null,
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Remember Me',
-                    style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.secondary,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      height: 1.54,
+                      color: const Color.fromRGBO(102, 112, 133, 1),
                     ),
                   ),
                 ],
@@ -498,9 +564,12 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 child: Text(
                   'Forgot Password?',
-                  style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    height: 1.54,
+                    color: AppTheme.primaryBlue,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
@@ -520,15 +589,90 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  Widget _buildTermsAndConditionsCheckbox() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 20,
+          width: 20,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _isTermsAgreed = !_isTermsAgreed;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                color: _isTermsAgreed
+                    ? const Color.fromRGBO(52, 84, 207, 1)
+                    : Colors.transparent,
+                border: Border.all(
+                  color: const Color.fromRGBO(193, 199, 201, 1),
+                  width: 1,
+                ),
+              ),
+              child: _isTermsAgreed
+                  ? Icon(
+                      Icons.check,
+                      size: 14,
+                      color: Colors.white,
+                    )
+                  : null,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: GoogleFonts.montserrat(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                height: 1.54,
+                color: const Color.fromRGBO(102, 112, 133, 1),
+              ),
+              children: [
+                const TextSpan(text: 'By signing up, you agree to our '),
+                TextSpan(
+                  text: 'Terms of Use',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    height: 1.54,
+                    color: const Color.fromRGBO(28, 74, 151, 1),
+                    decoration: TextDecoration.underline,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      // Handle navigation to Terms of Use
+                      // _openTermsOfUse(context);
+                    },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildToggleAuthModeButton() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
           widget.isLogin
               ? "Don't have an account?"
               : 'Already have an account?',
-          style: AppTheme.lightTheme.textTheme.bodyMedium,
+          style: GoogleFonts.montserrat(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 1.54,
+            color: const Color.fromRGBO(102, 112, 133, 1),
+          ),
         ),
         TextButton(
           onPressed: () {
@@ -541,9 +685,11 @@ class _AuthScreenState extends State<AuthScreen> {
           },
           child: Text(
             widget.isLogin ? 'Sign Up' : 'Login',
-            style: TextStyle(
-              color: AppTheme.primaryColor,
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
               fontWeight: FontWeight.w500,
+              height: 1.54,
+              color: AppTheme.primaryBlue,
             ),
           ),
         ),
@@ -565,10 +711,12 @@ class _AuthScreenState extends State<AuthScreen> {
       if (widget.isLogin) {
         // Login flow
         print("Starting login process...");
-        await _authService.signInWithEmail(
+        final userCredential = await _authService.signInWithEmail(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
+
+        await _saveLoginState(userCredential);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

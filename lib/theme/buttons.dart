@@ -175,7 +175,11 @@ enum ButtonVariant {
   secondary,
   tertiary,
   outline,
-  wide;
+  wide,
+  roleActive,
+  roleInactive;
+
+  const ButtonVariant();
 
   Color get backgroundColor {
     switch (this) {
@@ -184,10 +188,15 @@ enum ButtonVariant {
       case ButtonVariant.secondary:
         return Colors.white;
       case ButtonVariant.tertiary:
+        return Colors.transparent;
       case ButtonVariant.outline:
         return Colors.transparent;
       case ButtonVariant.wide:
-        return const Color.fromRGBO(1, 107, 228, 1); 
+        return const Color.fromRGBO(1, 107, 228, 1);
+      case ButtonVariant.roleActive:
+        return const Color(0xFF1C4A97);
+      case ButtonVariant.roleInactive:
+        return const Color.fromRGBO(231, 231, 231, 1);
     }
   }
 
@@ -195,11 +204,14 @@ enum ButtonVariant {
     switch (this) {
       case ButtonVariant.primary:
       case ButtonVariant.wide:
+      case ButtonVariant.roleActive:
         return Colors.white;
       case ButtonVariant.secondary:
       case ButtonVariant.tertiary:
       case ButtonVariant.outline:
         return const Color(0xFF1C4A97);
+      case ButtonVariant.roleInactive:
+        return const Color.fromRGBO(111, 108, 144, 1);
     }
   }
 
@@ -215,6 +227,10 @@ enum ButtonVariant {
         return const Color(0xFF1C4A97);
       case ButtonVariant.wide:
         return const Color.fromRGBO(1, 107, 228, 1).withOpacity(0.9);
+      case ButtonVariant.roleActive:
+        return const Color(0xFF1C4A97).withOpacity(0.9);
+      case ButtonVariant.roleInactive:
+        return const Color.fromRGBO(231, 231, 231, 0.9);
     }
   }
 
@@ -222,12 +238,15 @@ enum ButtonVariant {
     switch (this) {
       case ButtonVariant.primary:
       case ButtonVariant.wide:
+      case ButtonVariant.roleActive:
         return Colors.white;
       case ButtonVariant.secondary:
       case ButtonVariant.tertiary:
         return const Color(0xFF1C4A97);
       case ButtonVariant.outline:
         return Colors.white;
+      case ButtonVariant.roleInactive:
+        return const Color.fromRGBO(111, 108, 144, 1);
     }
   }
 
@@ -238,7 +257,12 @@ enum ButtonVariant {
           color: Color(0xFF1C4A97),
           width: 1,
         );
-      default:
+      case ButtonVariant.primary:
+      case ButtonVariant.secondary:
+      case ButtonVariant.tertiary:
+      case ButtonVariant.wide:
+      case ButtonVariant.roleActive:
+      case ButtonVariant.roleInactive:
         return BorderSide.none;
     }
   }

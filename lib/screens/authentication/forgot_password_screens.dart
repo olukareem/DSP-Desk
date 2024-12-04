@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/buttons.dart';
 import 'auth_screen.dart';
@@ -69,26 +70,34 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 32),
                 Center(
                   child: Image.asset(
                     'assets/images/logo.png',
                     width: 120.19,
                     height: 40,
+                    color: AppTheme.primaryBlue,
                   ),
                 ),
                 const SizedBox(height: 32),
                 Text(
                   'Forgot Password',
-                  style: AppTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                    fontFamily: 'Spectral',
+                  style: GoogleFonts.spectral(
                     fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    height: 1.54,
                     color: AppColors.secondary,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Enter your email and we\'ll send you a reset link',
-                  style: AppTheme.lightTheme.textTheme.bodyLarge,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.54,
+                    color: AppColors.secondary,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -140,11 +149,13 @@ class CheckEmailScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 32),
             Center(
               child: Image.asset(
                 'assets/images/logo.png',
                 width: 120.19,
                 height: 40,
+                color: AppTheme.primaryBlue,
               ),
             ),
             const SizedBox(height: 64),
@@ -191,10 +202,12 @@ class CheckEmailScreen extends StatelessWidget {
 class CreateNewPasswordScreen extends StatefulWidget {
   final String code; // Password reset code from the email link
 
-  const CreateNewPasswordScreen({Key? key, required this.code}) : super(key: key);
+  const CreateNewPasswordScreen({Key? key, required this.code})
+      : super(key: key);
 
   @override
-  State<CreateNewPasswordScreen> createState() => _CreateNewPasswordScreenState();
+  State<CreateNewPasswordScreen> createState() =>
+      _CreateNewPasswordScreenState();
 }
 
 class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
@@ -256,11 +269,13 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 32),
                 Center(
                   child: Image.asset(
                     'assets/images/logo.png',
                     width: 120.19,
                     height: 40,
+                    color: AppTheme.primaryBlue,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -307,10 +322,9 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-                  validator: (value) =>
-                      value != _passwordController.text
-                          ? 'Passwords do not match'
-                          : null,
+                  validator: (value) => value != _passwordController.text
+                      ? 'Passwords do not match'
+                      : null,
                 ),
                 const SizedBox(height: 24),
                 AppButton(
@@ -339,11 +353,13 @@ class PasswordChangedSuccessScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 32),
             Center(
               child: Image.asset(
                 'assets/images/logo.png',
                 width: 120.19,
                 height: 40,
+                color: AppTheme.primaryBlue,
               ),
             ),
             const SizedBox(height: 64),
