@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "298701519929",
+    "project_id": "dsp-desk",
+    "storage_bucket": "dsp-desk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298701519929:android:558407369062916a9aa1e8",
+        "android_client_info": {
+          "package_name": "com.dspdesk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFyHtbv5W24bECPdTHqwaxxvxr8sNgOiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

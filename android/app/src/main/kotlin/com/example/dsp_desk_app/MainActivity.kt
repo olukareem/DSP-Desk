@@ -1,4 +1,4 @@
-package com.example.dsp_desk_app
+package com.dspdesk
 
 import io.flutter.embedding.android.FlutterActivity
 

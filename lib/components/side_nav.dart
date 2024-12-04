@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:drivers_management_app/screens/dashboard/kpis_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../screens/authentication/auth_screen.dart';
 import '../theme/app_theme.dart';
 
 class SideNav extends StatefulWidget {
@@ -202,6 +204,34 @@ class _SideNavState extends State<SideNav> {
               title: 'Settings',
               children: [],
               isParentActive: false,
+            ),
+            _buildCustomListTile(
+              context,
+              'Logout',
+              () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const AuthScreen(isLogin: true)),
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Error logging out. Please try again.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+              svgIconPath: 'assets/icons/log-out-01.svg',
+              isActive: _activeScreen == 'Logout',
             ),
           ],
         ),

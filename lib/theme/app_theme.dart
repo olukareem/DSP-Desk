@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static LinearGradient get primaryGradient {
@@ -11,52 +12,58 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     return ThemeData(
-      primaryColor: Color(0xFF1C4A97),
+      primaryColor: const Color(0xFF1C4A97),
       scaffoldBackgroundColor: Colors.white,
+      inputDecorationTheme: inputDecorationTheme,
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: Color(0xFF1C4A97),
-        secondary: Color(0xFF212429),
+        primary: const Color(0xFF1C4A97),
+        secondary: const Color(0xFF212429),
       ),
       textTheme: TextTheme(
-        displayLarge: TextStyle(
-          fontFamily: 'Spectral',
-          fontSize: 28.0,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF1C4A97),
+        displayLarge: GoogleFonts.spectral(
+          textStyle: const TextStyle(
+            fontSize: 28.0,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1C4A97),
+          ),
         ),
-        displayMedium: TextStyle(
-          fontFamily: 'Spectral',
-          fontSize: 24.0,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF212429),
+        displayMedium: GoogleFonts.spectral(
+          textStyle: const TextStyle(
+            fontSize: 24.0,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF212429),
+          ),
         ),
-        bodyLarge: TextStyle(
-          fontFamily: 'Montserrat',
-          fontSize: 16.0,
-          fontWeight: FontWeight.normal,
-          color: Color(0xFF212429),
+        bodyLarge: GoogleFonts.montserrat(
+          textStyle: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.normal,
+            color: Color(0xFF212429),
+          ),
         ),
-        bodyMedium: TextStyle(
-          fontFamily: 'Montserrat',
-          fontSize: 14.0,
-          fontWeight: FontWeight.normal,
-          color: Color(0xFF9C9B9B),
+        bodyMedium: GoogleFonts.montserrat(
+          textStyle: const TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.normal,
+            color: Color(0xFF9C9B9B),
+          ),
         ),
-        labelLarge: TextStyle(
-          fontFamily: 'Montserrat',
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+        labelLarge: GoogleFonts.montserrat(
+          textStyle: const TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: Color(0xFF1C4A97),
         size: 24.0,
       ),
-      drawerTheme: DrawerThemeData(
+      drawerTheme: const DrawerThemeData(
         backgroundColor: Color(0xFFFFFFFF),
       ),
-      expansionTileTheme: ExpansionTileThemeData(
+      expansionTileTheme: const ExpansionTileThemeData(
         backgroundColor: Color(0xFFFFFFFF),
         collapsedIconColor: Color(0xFF1C4A97),
         textColor: Color(0xFF1C4A97),
@@ -66,7 +73,6 @@ class AppTheme {
     );
   }
 
-  // Add missing getters
   static Color get primaryColor => AppColors.primary;
   static Color get secondaryColor => AppColors.secondary;
   static Color get onPrimaryColor => AppColors.white;
@@ -77,18 +83,20 @@ class AppTheme {
   static const Color secondaryLightBlue = Color(0xFFF1F1FF);
   static const Color inactiveTabTextColor = Color(0xFF667085);
 
-  // Add text styles
-  static TextStyle get headline1 => const TextStyle(
-        fontFamily: 'Spectral',
-        fontSize: 28.0,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+  // Add text styles using Google Fonts
+  static TextStyle get headline1 => GoogleFonts.spectral(
+        textStyle: const TextStyle(
+          fontSize: 28.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       );
 
-  static TextStyle get tabLabelStyle => const TextStyle(
-        fontFamily: 'Montserrat',
-        fontSize: 16.0,
-        fontWeight: FontWeight.bold,
+  static TextStyle get tabLabelStyle => GoogleFonts.montserrat(
+        textStyle: const TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
       );
 
   static const TextStyle tabActiveTextStyle = TextStyle(
@@ -104,6 +112,51 @@ class AppTheme {
     fontWeight: FontWeight.w500,
     color: inactiveTabTextColor,
   );
+
+  static InputDecorationTheme get inputDecorationTheme {
+    return InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: 12.0,
+        horizontal: 14.0,
+      ),
+      hintStyle: GoogleFonts.montserrat(
+        textStyle: const TextStyle(
+          fontSize: 14.0,
+          fontWeight: FontWeight.w400,
+          height: 1.71,
+          color: Color.fromRGBO(160, 163, 189, 1),
+        ),
+      ),
+      border: _defaultInputBorder,
+      enabledBorder: _defaultInputBorder,
+      focusedBorder: _defaultInputBorder,
+      errorBorder: _defaultInputBorder.copyWith(
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: _defaultInputBorder.copyWith(
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+    );
+  }
+
+  static final OutlineInputBorder _defaultInputBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(4),
+    borderSide: const BorderSide(
+      color: Color.fromRGBO(208, 213, 221, 1),
+      width: 1.0,
+    ),
+  );
+
+  static TextStyle get inputTextStyle => GoogleFonts.montserrat(
+        textStyle: const TextStyle(
+          fontSize: 14.0,
+          fontWeight: FontWeight.w400,
+          height: 1.71,
+          color: Colors.black,
+        ),
+      );
 }
 
 class AppColors {

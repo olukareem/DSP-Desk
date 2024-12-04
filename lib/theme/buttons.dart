@@ -30,35 +30,35 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+            (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
                 return variant.backgroundColor.withOpacity(0.5);
               }
-              if (states.contains(MaterialState.hovered)) {
+              if (states.contains(WidgetState.hovered)) {
                 return variant.hoverBackgroundColor;
               }
               return variant.backgroundColor;
             },
           ),
-          foregroundColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) {
-              if (states.contains(MaterialState.hovered)) {
+          foregroundColor: WidgetStateProperty.resolveWith<Color>(
+            (Set<WidgetState> states) {
+              if (states.contains(WidgetState.hovered)) {
                 return variant.hoverTextColor;
               }
               return variant.textColor;
             },
           ),
-          padding: MaterialStateProperty.all<EdgeInsets>(
+          padding: WidgetStateProperty.all<EdgeInsets>(
             size.padding,
           ),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
               side: variant.border,
             ),
           ),
-          elevation: MaterialStateProperty.all(0),
+          elevation: WidgetStateProperty.all(0),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -83,7 +83,7 @@ class AppButton extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: size.fontSize,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                   height: size.lineHeight,
                 ),
               ),
@@ -174,7 +174,8 @@ enum ButtonVariant {
   primary,
   secondary,
   tertiary,
-  outline;
+  outline,
+  wide;
 
   Color get backgroundColor {
     switch (this) {
@@ -185,12 +186,15 @@ enum ButtonVariant {
       case ButtonVariant.tertiary:
       case ButtonVariant.outline:
         return Colors.transparent;
+      case ButtonVariant.wide:
+        return const Color.fromRGBO(1, 107, 228, 1); 
     }
   }
 
   Color get textColor {
     switch (this) {
       case ButtonVariant.primary:
+      case ButtonVariant.wide:
         return Colors.white;
       case ButtonVariant.secondary:
       case ButtonVariant.tertiary:
@@ -209,12 +213,15 @@ enum ButtonVariant {
         return Colors.transparent;
       case ButtonVariant.outline:
         return const Color(0xFF1C4A97);
+      case ButtonVariant.wide:
+        return const Color.fromRGBO(1, 107, 228, 1).withOpacity(0.9);
     }
   }
 
   Color get hoverTextColor {
     switch (this) {
       case ButtonVariant.primary:
+      case ButtonVariant.wide:
         return Colors.white;
       case ButtonVariant.secondary:
       case ButtonVariant.tertiary:
