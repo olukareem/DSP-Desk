@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,6 +26,8 @@ class _FleetOverviewScreenState extends State<FleetOverviewScreen> {
   Map<String, List<String>>? activeFilters;
   String? _currentSortField;
   bool _isAscending = true;
+  static const int itemsPerPage = 3;
+  int _currentPage = 1;
 
   @override
   void initState() {
@@ -58,6 +62,17 @@ class _FleetOverviewScreenState extends State<FleetOverviewScreen> {
         _searchQuery = '';
       }
     });
+  }
+
+  int _calculateTotalPages(int totalItems) {
+    return (totalItems / itemsPerPage).ceil();
+  }
+
+  List<QueryDocumentSnapshot> _getPaginatedItems(
+      List<QueryDocumentSnapshot> items) {
+    final startIndex = (_currentPage - 1) * itemsPerPage;
+    final endIndex = min(startIndex + itemsPerPage, items.length);
+    return items.sublist(startIndex, endIndex);
   }
 
   bool _matchesSearch(Map<String, dynamic> vehicle, String query) {
@@ -279,194 +294,217 @@ class _FleetOverviewScreenState extends State<FleetOverviewScreen> {
                       }
                     });
 
-                    return ListView.builder(
-                      itemCount: filteredFleets.length,
-                      itemBuilder: (context, index) {
-                        final vehicle = filteredFleets[index].data()
-                            as Map<String, dynamic>;
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount:
+                                _getPaginatedItems(filteredFleets).length,
+                            itemBuilder: (context, index) {
+                              final vehicle =
+                                  _getPaginatedItems(filteredFleets)[index]
+                                      .data() as Map<String, dynamic>;
 
-                        final String name =
-                            vehicle['name'] ?? 'Unknown Vehicle';
-                        final String driver = vehicle['driver'] ?? 'N/A';
-                        final String fuel = '${vehicle['fuel'] ?? 0}%';
-                        final String license = vehicle['license'] ?? 'N/A';
-                        final String alert = vehicle['alert'] ?? 'None';
-                        final String miles = '${vehicle['miles'] ?? 0} miles';
-                        final String vin = vehicle['vin'] ?? 'N/A';
-                        final String status = vehicle['status'] ?? 'No Status';
+                              final String name =
+                                  vehicle['name'] ?? 'Unknown Vehicle';
+                              final String driver = vehicle['driver'] ?? 'N/A';
+                              final String fuel = '${vehicle['fuel'] ?? 0}%';
+                              final String license =
+                                  vehicle['license'] ?? 'N/A';
+                              final String alert = vehicle['alert'] ?? 'None';
+                              final String miles =
+                                  '${vehicle['miles'] ?? 0} miles';
+                              final String vin = vehicle['vin'] ?? 'N/A';
+                              final String status =
+                                  vehicle['status'] ?? 'No Status';
 
-                        Color badgeColor;
-                        Color textColor;
-                        Color dotColor;
+                              Color badgeColor;
+                              Color textColor;
+                              Color dotColor;
 
-                        switch (status) {
-                          case 'Active':
-                            badgeColor = const Color(0xFFECFDF3);
-                            textColor = const Color(0xFF027A48);
-                            dotColor = const Color(0xFF12B76A);
-                            break;
-                          case 'Break':
-                            badgeColor = const Color(0xFFECEFFF);
-                            textColor = const Color(0xFF1C4A97);
-                            dotColor = const Color(0xFF1C4A97);
-                            break;
-                          case 'Unavailable':
-                            badgeColor = const Color(0xFFFFEDED);
-                            textColor = const Color(0xFFC40A0A);
-                            dotColor = const Color(0xFFC40A0A);
-                            break;
-                          default:
-                            badgeColor = const Color.fromRGBO(249, 250, 252, 1);
-                            textColor = const Color.fromRGBO(102, 112, 133, 1);
-                            dotColor = const Color.fromRGBO(155, 154, 160, 1);
-                        }
+                              switch (status) {
+                                case 'Active':
+                                  badgeColor = const Color(0xFFECFDF3);
+                                  textColor = const Color(0xFF027A48);
+                                  dotColor = const Color(0xFF12B76A);
+                                  break;
+                                case 'Break':
+                                  badgeColor = const Color(0xFFECEFFF);
+                                  textColor = const Color(0xFF1C4A97);
+                                  dotColor = const Color(0xFF1C4A97);
+                                  break;
+                                case 'Unavailable':
+                                  badgeColor = const Color(0xFFFFEDED);
+                                  textColor = const Color(0xFFC40A0A);
+                                  dotColor = const Color(0xFFC40A0A);
+                                  break;
+                                default:
+                                  badgeColor =
+                                      const Color.fromRGBO(249, 250, 252, 1);
+                                  textColor =
+                                      const Color.fromRGBO(102, 112, 133, 1);
+                                  dotColor =
+                                      const Color.fromRGBO(155, 154, 160, 1);
+                              }
 
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FleetDetailsScreen(
-                                  fleetId: filteredFleets[index].id,
-                                  fleetData: vehicle,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border:
-                                  Border.all(color: const Color(0xFFECECEC)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      name,
-                                      style: const TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FleetDetailsScreen(
+                                        fleetId: filteredFleets[index].id,
+                                        fleetData: vehicle,
                                       ),
                                     ),
-                                    PopupMenuButton<String>(
-                                      onSelected: (value) {
-                                        if (value == 'edit') {
-                                          _editVehicle(context, vehicle,
-                                              filteredFleets[index].id);
-                                        } else if (value == 'delete') {
-                                          _deleteVehicle(context,
-                                              filteredFleets[index].id);
-                                        }
-                                      },
-                                      itemBuilder: (context) => [
-                                        const PopupMenuItem(
-                                          value: 'edit',
-                                          child: Text('Edit'),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: 'delete',
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
-                                      icon: const Icon(Icons.more_horiz,
-                                          size: 16, color: Color(0xFF8D8D8D)),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Driver, Fuel, and License
-                                Row(
-                                  children: [
-                                    _buildSpanText('Driver:', driver),
-                                    _buildDot(),
-                                    _buildSpanText('Fuel:', fuel),
-                                    _buildDot(),
-                                    _buildSpanText('License:', license),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Alert and Miles
-                                Row(
-                                  children: [
-                                    _buildSpanText('Alert:', alert),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      miles,
-                                      style: const TextStyle(
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF667085),
+                                  );
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: const Color(0xFFECECEC)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 3,
+                                        offset: const Offset(0, 1),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-
-                                // VIN and Status Badge
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _buildSpanText('VIN:', vin),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2, horizontal: 8),
-                                      decoration: BoxDecoration(
-                                        color: badgeColor,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Row(
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Container(
-                                            width: 6,
-                                            height: 6,
-                                            decoration: BoxDecoration(
-                                              color: dotColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(3),
+                                          Text(
+                                            name,
+                                            style: const TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
                                             ),
                                           ),
-                                          const SizedBox(width: 4),
+                                          PopupMenuButton<String>(
+                                            onSelected: (value) {
+                                              if (value == 'edit') {
+                                                _editVehicle(context, vehicle,
+                                                    filteredFleets[index].id);
+                                              } else if (value == 'delete') {
+                                                _deleteVehicle(context,
+                                                    filteredFleets[index].id);
+                                              }
+                                            },
+                                            itemBuilder: (context) => [
+                                              const PopupMenuItem(
+                                                value: 'edit',
+                                                child: Text('Edit'),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: 'delete',
+                                                child: Text('Delete'),
+                                              ),
+                                            ],
+                                            icon: const Icon(Icons.more_horiz,
+                                                size: 16,
+                                                color: Color(0xFF8D8D8D)),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          _buildSpanText('Driver:', driver),
+                                          _buildDot(),
+                                          _buildSpanText('Fuel:', fuel),
+                                          _buildDot(),
+                                          _buildSpanText('License:', license),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          _buildSpanText('Alert:', alert),
+                                          const SizedBox(width: 8),
                                           Text(
-                                            status,
-                                            style: TextStyle(
+                                            miles,
+                                            style: const TextStyle(
                                               fontFamily: 'Montserrat',
-                                              fontSize: 12,
+                                              fontSize: 14,
                                               fontWeight: FontWeight.w500,
-                                              color: textColor,
+                                              color: Color(0xFF667085),
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          _buildSpanText('VIN:', vin),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 2, horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              color: badgeColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 6,
+                                                  height: 6,
+                                                  decoration: BoxDecoration(
+                                                    color: dotColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            3),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  status,
+                                                  style: TextStyle(
+                                                    fontFamily: 'Montserrat',
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: textColor,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
+                        ),
+                        if (filteredFleets.length > itemsPerPage)
+                          FleetPagination(
+                            currentPage: _currentPage,
+                            totalPages:
+                                _calculateTotalPages(filteredFleets.length),
+                            onPageChanged: (page) {
+                              setState(() {
+                                _currentPage = page;
+                              });
+                            },
+                          ),
+                      ],
                     );
                   },
                 ),
@@ -886,11 +924,11 @@ class FleetSortDialog extends StatefulWidget {
   final bool isAscending;
 
   const FleetSortDialog({
-    Key? key,
+    super.key,
     required this.onApplySort,
     this.currentSortField,
     this.isAscending = true,
-  }) : super(key: key);
+  });
 
   @override
   _FleetSortDialogState createState() => _FleetSortDialogState();
@@ -1100,6 +1138,114 @@ class _FleetSortDialogState extends State<FleetSortDialog> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class FleetPagination extends StatelessWidget {
+  final int currentPage;
+  final int totalPages;
+  final Function(int) onPageChanged;
+
+  const FleetPagination({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+    required this.onPageChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 76,
+      padding: const EdgeInsets.only(top: 5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 1),
+            blurRadius: 2,
+            color: const Color(0x0F101828),
+          ),
+          BoxShadow(
+            offset: const Offset(0, 1),
+            blurRadius: 3,
+            color: const Color(0x1A101828),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildPaginationButton(
+            icon: 'assets/icons/arrow-left.svg',
+            onPressed:
+                currentPage > 1 ? () => onPageChanged(currentPage - 1) : null,
+          ),
+          const SizedBox(width: 20),
+          Text(
+            'Page $currentPage of $totalPages',
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              color: const Color(0xFF667085),
+            ),
+          ),
+          const SizedBox(width: 20),
+          _buildPaginationButton(
+            icon: 'assets/icons/arrow-right.svg',
+            onPressed: currentPage < totalPages
+                ? () => onPageChanged(currentPage + 1)
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaginationButton({
+    required String icon,
+    VoidCallback? onPressed,
+  }) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+        ),
+        border: Border.all(
+          color: const Color(0xFFE4E2E6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 1),
+            blurRadius: 2,
+            color: const Color(0x0D101828),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          child: Center(
+            child: SvgPicture.asset(
+              icon,
+              width: 11.67,
+              height: 11.67,
+              colorFilter: ColorFilter.mode(
+                onPressed != null
+                    ? const Color(0xFF8D8D8D)
+                    : const Color(0xFFD0D5DD),
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
         ),
       ),
     );
