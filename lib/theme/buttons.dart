@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
@@ -6,6 +7,7 @@ class AppButton extends StatelessWidget {
   final ButtonSize size;
   final ButtonVariant variant;
   final bool isFullWidth;
+  final double? customWidth;
   final bool isLoading;
   final IconData? leftIcon;
   final IconData? rightIcon;
@@ -17,6 +19,7 @@ class AppButton extends StatelessWidget {
     this.size = ButtonSize.large,
     this.variant = ButtonVariant.primary,
     this.isFullWidth = false,
+    this.customWidth,
     this.isLoading = false,
     this.leftIcon,
     this.rightIcon,
@@ -25,7 +28,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: isFullWidth ? double.infinity : null,
+      width: customWidth ?? (isFullWidth ? double.infinity : null),
       height: size.height,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
@@ -92,6 +95,133 @@ class AppButton extends StatelessWidget {
               Icon(rightIcon, size: size.iconSize),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class FilterButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const FilterButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 36,
+      width: 73,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          side: const BorderSide(color: Color(0xFF1C4A97)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Filter',
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1C4A97),
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.filter_list, color: Color(0xFF1C4A97), size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SortByButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const SortByButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 36,
+      width: 88,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromRGBO(227, 232, 242, 1),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Sort By',
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color.fromRGBO(28, 74, 151, 1),
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              size: 16,
+              color: Color.fromRGBO(28, 74, 151, 1),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SearchButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const SearchButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFFFF),
+          border: Border.all(
+            color: const Color(0xFFE4E2E6),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(16, 24, 40, 0.05),
+              blurRadius: 2,
+              offset: Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Center(
+          child: SvgPicture.asset(
+            'assets/icons/search.svg',
+            width: 12,
+            height: 12,
+            colorFilter: const ColorFilter.mode(
+              Color(0xFF8D8D8D),
+              BlendMode.srcIn,
+            ),
+          ),
         ),
       ),
     );

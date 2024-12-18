@@ -31,7 +31,7 @@ class LandingPage extends StatelessWidget {
             backgroundColor: const Color.fromRGBO(51, 92, 161, 1),
             elevation: 0,
             leadingWidth:
-                92, // Adjusting the leading width to align better with body text padding
+                92,
             leading: Padding(
               padding: const EdgeInsets.only(left: 16.0),
               child: SizedBox(
@@ -155,7 +155,7 @@ class LandingPage extends StatelessWidget {
                 Container(
                   width: MediaQuery.of(context).size.width,
                   color: Color.fromRGBO(51, 92, 161,
-                      1), // Blue background color for the whole section
+                      1),
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +232,7 @@ class LandingPage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: AspectRatio(
                           aspectRatio:
-                              1.4, // Horizontal tablet aspect ratio like in the image
+                              1.4,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.black,

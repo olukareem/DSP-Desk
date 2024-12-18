@@ -1,3 +1,4 @@
+import 'package:drivers_management_app/screens/fleet/fleet_overview_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:drivers_management_app/screens/dashboard/kpis_screen.dart';
@@ -72,6 +73,10 @@ class _SideNavState extends State<SideNav> {
                     setState(() {
                       _activeScreen = 'Fleet Overview';
                     });
+                    Navigator.of(context).pop(); // Close the drawer
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => FleetOverviewScreen(),
+                    ));
                   },
                   isActive: _activeScreen == 'Fleet Overview',
                 ),
